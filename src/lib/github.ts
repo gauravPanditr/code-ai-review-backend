@@ -24,22 +24,22 @@ export const getGithubToken=async ()=>{
 
 
 
-interface ContributionData {
-  user: {
-    contributionCollection: {
-      contributionCalendar: {
-        totalContributions: number;
-        weeks: {
-          contributionDays: {
-            contributionCount: number;
-            date: string;
-            color: string;
-          }[];
-        }[];
-      };
-    };
-  };
-}
+// interface ContributionData {
+//   user: {
+//     contributionCollection: {
+//       contributionCalendar: {
+//         totalContributions: number;
+//         weeks: {
+//           contributionDays: {
+//             contributionCount: number;
+//             date: string;
+//             color: string;
+//           }[];
+//         }[];
+//       };
+//     };
+//   };
+// }
 
 export async function fetchUserContribution(
   token: string,
@@ -69,8 +69,8 @@ export async function fetchUserContribution(
   `;
 
   try {
-    const response =
-      await octokit.graphql<ContributionData>(
+    const response :any =
+      await octokit.graphql(
         query,
         {
           username,
