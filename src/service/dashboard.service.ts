@@ -2,17 +2,60 @@ import { auth } from "../lib/auth.js";
 
 import { Octokit } from "octokit";
 import { getGithubToken, fetchUserContribution } from "../lib/github.js";
-import { logger } from "better-auth";
+import type { Request } from "express";
+import { fromNodeHeaders } from "better-auth/node";
 
-export async function getDashboardStats() {
+
+export async function getContributionStats(req:Request) {
   try {
-    const session = await auth.api.getSession();
+     const session = await auth.api.getSession({
+      headers:fromNodeHeaders(req.headers)
+    });
 
     if (!session?.user) {
       throw new Error("Unauthorized");
     }
 
-    const token = await getGithubToken();
+    const token = await getGithubToken(req);
+
+    const octokit = new Octokit({
+      auth: token,
+    }); 
+      const { data: user } =
+      await octokit.rest.users.getAuthenticated();
+      const username=user.login;
+      const calendar= await fetchUserContribution(token,username);
+      if(!calendar)
+         return null;
+       const contributions = calendar.weeks.flatMap((week: any) =>
+  week.contributionDays.map((day: any) => ({
+    date: day.date,
+    count: day.contributionCount,
+    level: Math.min(4, Math.floor(day.contributionCount / 3)), // Convert to 0-4 scale
+  }))
+);
+   return {contributions
+    
+   };
+  } catch (error) {
+     console.log(error);
+     return null;
+     
+  }
+}
+
+
+export async function getDashboardStats( req: Request) {
+  try {
+    const session = await auth.api.getSession({
+      headers:fromNodeHeaders(req.headers)
+    });
+
+    if (!session?.user) {
+      throw new Error("Unauthorized");
+    }
+
+    const token = await getGithubToken(req);
 
     const octokit = new Octokit({
       auth: token,
@@ -39,7 +82,7 @@ export async function getDashboardStats() {
 
     const totalCommits =
       calendar?.totalContributions || 0;
-
+   // const totalCommits=0;
     // Total Pull Requests
     const { data: prs } =
       await octokit.rest.search.issuesAndPullRequests({
@@ -73,15 +116,17 @@ export async function getDashboardStats() {
 
 
 
-export async function getMonthlyActivity() {
+export async function getMonthlyActivity(req: Request) {
   try {
-    const session = await auth.api.getSession();
+    const session = await auth.api.getSession({
+      headers:fromNodeHeaders(req.headers)
+    });
 
     if (!session?.user) {
       throw new Error("Unauthorized");
     }
 
-    const token = await getGithubToken();
+    const token = await getGithubToken(req);
 
     const octokit = new Octokit({
       auth: token,

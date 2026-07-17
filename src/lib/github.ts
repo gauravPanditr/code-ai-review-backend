@@ -2,9 +2,12 @@
 import { Octokit } from "octokit";
 import { auth } from "./auth.js"
 import { prisma } from "./primsa.js";
-
-export const getGithubToken=async ()=>{
-    const session=await auth.api.getSession();
+import { fromNodeHeaders } from "better-auth/node";
+import type { Request } from "express";
+export const getGithubToken=async (  req: Request)=>{
+    const session=await auth.api.getSession({
+      headers:fromNodeHeaders(req.headers),
+    });
     if(!session){
          throw new Error("");
     }
@@ -52,7 +55,7 @@ export async function fetchUserContribution(
   const query = `
     query($username: String!) {
       user(login: $username) {
-        contributionCollection {
+        contributionsCollection {
           contributionCalendar {
             totalContributions
             weeks {
@@ -69,21 +72,13 @@ export async function fetchUserContribution(
   `;
 
   try {
-    const response :any =
-      await octokit.graphql(
-        query,
-        {
-          username,
-        }
-      );
+    const response: any = await octokit.graphql(query, {
+      username,
+    });
 
-    return response.user.contributionCollection
-      .contributionCalendar;
+    return response.user.contributionsCollection.contributionCalendar;
   } catch (error) {
-    console.error(
-      "Failed to fetch contributions:",
-      error
-    );
+    console.error("Failed to fetch contributions:", error);
     throw error;
   }
 }
