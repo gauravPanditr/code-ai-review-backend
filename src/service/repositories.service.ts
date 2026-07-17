@@ -42,17 +42,25 @@ export const  connectRepository=async(req:Request,owner:string,repo:string,githu
     const webhook=await createWebhook(req,owner,repo);
 
 if (webhook) {
-  await prisma.repositary.create({
-    data: {
+  const existingRepo = await prisma.repositary.findUnique({
+    where: {
       githubId: BigInt(githubId),
-      name: repo,
-      owner,
-      fullName: `${owner}/${repo}`,
-      url: `https://github.com/${owner}/${repo}`,
-      userId: session.user.id,
     },
   });
+
+   if (!existingRepo) {
+    await prisma.repositary.create({
+      data: {
+        githubId: BigInt(githubId),
+        name: repo,
+        owner,
+        fullName: `${owner}/${repo}`,
+        url: `https://github.com/${owner}/${repo}`,
+        userId: session.user.id,
+      },
+    });
+  }
 }
- return webhook
+return webhook;
 
 }

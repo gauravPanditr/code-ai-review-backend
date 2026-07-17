@@ -40,14 +40,14 @@ export const getRepositoriesController = async (req: Request, res: Response) => 
 export const connectRepositoryController = async (req: Request, res: Response) => {
   try {
     const { owner, repo, githubId } = req.body;
-
+console.log(owner, repo, githubId);
     if (!owner || !repo || !githubId) {
       return res.status(400).json({
         success: false,
         message: "owner, repo, and githubId are required",
       });
     }
-
+console.log(owner, repo, githubId);
     const webhook = await connectRepository(req, owner, repo, Number(githubId));
 
     if (!webhook) {

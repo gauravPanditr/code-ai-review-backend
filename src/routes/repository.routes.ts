@@ -4,5 +4,5 @@ const router = Router();
 
 
 router.get("/", getRepositoriesController);
-router.get("/",connectRepositoryController);
+router.post("/",connectRepositoryController);
 export default router;
