@@ -1,7 +1,7 @@
 import { auth } from "../lib/auth.js";
 
 import { Octokit } from "octokit";
-import { getGithubToken,fetchUserContribution } from "../lib/github.js";
+import { getGithubToken, fetchUserContribution } from "../lib/github.js";
 import { logger } from "better-auth";
 
 export async function getDashboardStats() {
@@ -124,22 +124,21 @@ export async function getMonthlyActivity() {
 
     const reviews = generateSampleReviews();
     reviews.forEach((review) => {
-      const monthKey :any= monthNames[review.createdAt.getMonth()];
+      const monthKey: any = monthNames[review.createdAt.getMonth()];
       if (monthlyData[monthKey]) {
         monthlyData[monthKey].reviews += 1;
       }
     });
 
     const { data: prs } = await octokit.rest.search.issuesAndPullRequests({
-      q: `author:${user.login} type:pr created:>${
-        sixMonthsAgo.toISOString().split("T")[0]
-      }`,
+      q: `author:${user.login} type:pr created:>${sixMonthsAgo.toISOString().split("T")[0]
+        }`,
       per_page: 100,
     });
 
     prs.items.forEach((pr: any) => {
       const date = new Date(pr.created_at);
-      const monthKey:any = monthNames[date.getMonth()];
+      const monthKey: any = monthNames[date.getMonth()];
       if (monthlyData[monthKey]) {
         monthlyData[monthKey].prs += 1;
       }
