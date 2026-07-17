@@ -1,5 +1,5 @@
 import type { Request,Response } from "express";
-import { getRepositorie } from "../service/repositories.service.js";
+import { connectRepository, getRepositorie } from "../service/repositories.service.js";
 
 export const getRepositoriesController = async (req: Request, res: Response) => {
   try {
@@ -32,6 +32,51 @@ export const getRepositoriesController = async (req: Request, res: Response) => 
     return res.status(500).json({
       success: false,
       message: "Failed to fetch repositories",
+    });
+  }
+};
+
+
+export const connectRepositoryController = async (req: Request, res: Response) => {
+  try {
+    const { owner, repo, githubId } = req.body;
+
+    if (!owner || !repo || !githubId) {
+      return res.status(400).json({
+        success: false,
+        message: "owner, repo, and githubId are required",
+      });
+    }
+
+    const webhook = await connectRepository(req, owner, repo, Number(githubId));
+
+    if (!webhook) {
+      return res.status(500).json({
+        success: false,
+        message: "Failed to create webhook for this repository",
+      });
+    }
+
+    return res.status(201).json({
+      success: true,
+      message: "Repository connected successfully",
+      data: webhook,
+    });
+  } catch (error: any) {
+    console.error("Connect Repository Error:", error);
+
+    if (error.message === "Unauthorized") {
+      return res.status(401).json({
+        success: false,
+        message: "Unauthorized",
+      });
+    }
+
+ 
+
+    return res.status(500).json({
+      success: false,
+      message: "Failed to connect repository",
     });
   }
 };

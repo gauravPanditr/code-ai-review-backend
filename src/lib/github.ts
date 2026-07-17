@@ -97,3 +97,26 @@ export const getRepositories=async(req:Request, page:number=1,perPage:number=10)
   return data;
 
 }
+
+export const createWebhook=async(req:Request,owner:string,repo:string)=>{
+  const token=await getGithubToken(req);
+  const octokit=new Octokit({auth:token});
+  const webhookUrl=`${process.env.PUBLIC_App_URL}/api/webhooks/github`
+  const{data:hooks}=await octokit.rest.repos.listWebhooks({
+    owner,
+    repo
+  })
+  const existingHook=hooks.find(hook=>hook.config.url===webhookUrl)
+  if(existingHook)
+    return existingHook;
+  const {data}=await octokit.rest.repos.createWebhook({
+    owner,
+    repo,
+    config:{
+      url:webhookUrl,
+      content_type:"json"
+    },
+    events:["pull_request"]
+  })
+  return data;
+}
