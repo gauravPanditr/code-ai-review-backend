@@ -1,10 +1,10 @@
 import { google } from "@ai-sdk/google";
 import { embed } from "ai";
 import { pineconeIndex } from "../lib/pinecone.js";
-
+import "dotenv/config"
 export async function generateEmbedding(text: string) {
   const { embedding } = await embed({
-    model: google.embeddingModel("text-embedding-004"),
+    model: google.embedding("text-embedding-004"),
     value: text,
   });
 
