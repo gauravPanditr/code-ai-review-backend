@@ -9,7 +9,7 @@ import { google } from "@ai-sdk/google";
 export const generateReview:any = inngest.createFunction(
   {
     id: "generate-review",
-    triggers: [{ event: "pr.review.requested" }],
+    triggers: [{ event: "pr.review-connected" }],
     concurrency: 5,
   },
 

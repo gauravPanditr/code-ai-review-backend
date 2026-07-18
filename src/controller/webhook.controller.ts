@@ -18,7 +18,7 @@ export const githubWebhookController = async (
       });
     }
 if(event === "pull_request"){
-    const action = req.body.actioon;
+    const action = req.body.action;
     const repo = req.body.repository.full_name;
     const prNumber = req.body.number;
 
