@@ -61,7 +61,19 @@ if (webhook) {
       },
     });
   }
- 
+ try {
+  await inngest.send({
+    name:"repository.connected",
+    data:{
+      owner,
+      repo,
+      userId:session.user.id
+    }
+  })
+ } catch (error) {
+    console.log("Error ",error);
+    
+ }
 
 }
 return webhook;
