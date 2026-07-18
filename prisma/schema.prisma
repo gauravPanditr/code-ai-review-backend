@@ -80,6 +80,7 @@ model Repositary{
   url String
   userId String
   user User @relation(fields: [userId], references: [id],onDelete: Cascade)
+  review Review[]
    createdAt  DateTime @default(now())
    updatedAt  DateTime @updatedAt
 
@@ -101,3 +102,18 @@ model Verification {
   @@map("verification")
 }
 
+model Review {
+  id           String     @id @default(cuid())
+  repositoryId String
+  repository   Repositary @relation(fields: [repositoryId], references: [id], onDelete: Cascade)
+  prNumber     Int
+  prTitle      String
+  prUrl        String
+  review       String     @db.Text
+  status       String     @default("completed") // completed, failed, pending
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+
+  @@index([repositoryId])
+  @@map("review")
+}

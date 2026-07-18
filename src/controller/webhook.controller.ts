@@ -1,34 +1,37 @@
 import type{ Request, Response } from "express";
+import { reviewPullRequest } from "../ai/actions/index.js";
 
 export const githubWebhookController = async (
   req: Request,
   res: Response
 ) => {
   try {
-    console.log("HEADERS:", req.headers);
-  console.log("BODY:", req.body);
+    
 
     const event = req.headers["x-github-event"];
 
-    console.log("Webhook Event:", event);
-    console.log("Payload:", req.body);
+   
 
     if (event === "ping") {
       return res.status(200).json({
         message: "Pong",
       });
     }
+if(event === "pull_request"){
+    const action = req.body.actioon;
+    const repo = req.body.repository.full_name;
+    const prNumber = req.body.number;
 
-    if (event === "pull_request") {
-      const action = req.body.action;
+    const [owner , repoName]= repo.split("/")
 
-      console.log("PR Action:", action);
-
-      return res.status(200).json({
-        success: true,
-        message: "Pull Request Event Received",
-      });
+    if(action === "opened" || action === "synchronize"){
+        reviewPullRequest(owner , repoName , prNumber)
+        .then(()=>console.log(`Review completed for ${repo} #${prNumber}`))
+        .catch((error)=>console.log(`Review failed for ${repo} #${prNumber}`))
     }
+
+}
+    
 
     return res.status(200).json({
       success: true,
