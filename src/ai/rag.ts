@@ -4,7 +4,7 @@ import { pineconeIndex } from "../lib/pinecone.js";
 import "dotenv/config"
 export async function generateEmbedding(text: string) {
   const { embedding } = await embed({
-    model: google.embedding("text-embedding-004"),
+  model: google.embeddingModel("gemini-embedding-001"),
     value: text,
   });
 

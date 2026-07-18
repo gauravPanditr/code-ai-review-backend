@@ -1,4 +1,4 @@
-import { success } from "better-auth";
+
 import { inngest } from "../../inngest/client.js";
 import { getPullRequestDiff } from "../../lib/github.js";
 import { prisma } from "../../lib/primsa.js";
