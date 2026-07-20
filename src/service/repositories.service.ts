@@ -111,7 +111,7 @@ export async function getConnectedRepositories(req:Request) {
 }
 
 
-export async function disConnectRepo(req: Request) {
+export async function disConnectRepo(req: Request,repositoryId:string) {
   try {
 
     const session = await auth.api.getSession({
@@ -122,7 +122,7 @@ export async function disConnectRepo(req: Request) {
       throw new Error("Unauthorized");
     }
 
-    const { repositoryId } = req.body;
+
 
     const repository = await prisma.repositary.findFirst({
       where: {
