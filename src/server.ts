@@ -7,6 +7,7 @@ import { getContributionStat, getDashboardController, getMonthlyActivityControll
 import { connectRepositoryController, getRepositoriesController } from "./controller/repository.controller.js";
 import webhookRoutes from "./routes/webhook.routes.js";
 import { inngestHandler } from "./inngest/index.js";
+import { getUserProfileController, updateUserProfileController } from "./controller/user.controller.js";
 
 
 const app = express();
@@ -31,6 +32,8 @@ app.use("/api/activity",getMonthlyActivityController)
 app.use("/api/repository",getRepositoriesController);
 app.use("/api/connectrespo",connectRepositoryController);
 app.use("/api/inngest", inngestHandler);
+app.use("/api/get",getUserProfileController);
+app.use("/api/update",updateUserProfileController);
 app.get("/api/test", (req, res) => {
   res.json({
     success: true,
