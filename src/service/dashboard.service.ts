@@ -4,6 +4,7 @@ import { Octokit } from "octokit";
 import { getGithubToken, fetchUserContribution } from "../lib/github.js";
 import type { Request } from "express";
 import { fromNodeHeaders } from "better-auth/node";
+import { prisma } from "../lib/primsa.js";
 
 
 export async function getContributionStats(req:Request) {
@@ -71,8 +72,14 @@ export async function getDashboardStats( req: Request) {
         per_page: 100,
       });
 
-    const totalRepos = repos.length;
-
+   //
+   //  const totalRepos = repos.length;
+  const totalRepos =
+  await prisma.repositary.count({
+    where: {
+      userId: session.user.id,
+    },
+  });
     // Total Commits
     const calendar =
       await fetchUserContribution(

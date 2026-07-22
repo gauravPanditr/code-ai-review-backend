@@ -25,6 +25,8 @@ if(event === "pull_request"){
     const [owner , repoName]= repo.split("/")
 
     if(action === "opened" || action === "synchronize"){
+       console.log("Reviewing");
+       
         reviewPullRequest(owner , repoName , prNumber)
         .then(()=>console.log(`Review completed for ${repo} #${prNumber}`))
         .catch((error)=>console.log(`Review failed for ${repo} #${prNumber}`))

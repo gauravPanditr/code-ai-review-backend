@@ -4,7 +4,7 @@ import { githubWebhookController } from "../controller/webhook.controller.js";
 const router = Router();
 
 router.post(
-  "/webhooks/github",
+  "/github",
   githubWebhookController
 );
 

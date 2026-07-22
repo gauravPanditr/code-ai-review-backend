@@ -1,10 +1,14 @@
 import { Router } from "express";
-import { getContributionStat, getDashboardController, getMonthlyActivityController } from "../controller/dashboard.controller.js";
+import {
+  getDashboardController,
+  getContributionStat,
+  getMonthlyActivityController,
+} from "../controller/dashboard.controller.js";
 
 const router = Router();
 
 router.get("/", getDashboardController);
-router.get("/",getContributionStat);
-router.get("/monthly", getMonthlyActivityController);
+router.get("/contribution", getContributionStat);
+router.get("/activity", getMonthlyActivityController);
 
 export default router;

@@ -7,6 +7,10 @@ import {
 const router = Router();
 
 router.get("/profile", getUserProfileController);
-router.put("/profile", updateUserProfileController);
+
+router.patch(
+  "/profile/update",
+  updateUserProfileController
+);
 
 export default router;

@@ -1,5 +1,5 @@
 import type { Request,Response } from "express";
-import { connectRepository, getRepositorie } from "../service/repositories.service.js";
+import { connectRepository, disconnectAllRepos, disConnectRepo, getConnectedRepositories, getRepositorie } from "../service/repositories.service.js";
 
 export const getRepositoriesController = async (req: Request, res: Response) => {
   try {
@@ -77,6 +77,75 @@ console.log(owner, repo, githubId);
     return res.status(500).json({
       success: false,
       message: "Failed to connect repository",
+    });
+  }
+};
+
+export const getConnectedRepositoriesController = async (
+  req: Request,
+  res: Response
+) => {
+  try {
+    const repositories =
+      await getConnectedRepositories(req);
+
+    res.status(200).json({
+      success: true,
+      repositories,
+    });
+  } catch (error: any) {
+    res.status(500).json({
+      success: false,
+      message:
+        error.message ||
+        "Failed to fetch repositories",
+    });
+  }
+};
+
+export const disConnectRepoController = async (
+  req: Request,
+  res: Response
+) => {
+  try {
+    const { repositoryId } = req.body;
+
+    if (!repositoryId) {
+      return res.status(400).json({
+        success: false,
+        message: "Repository ID is required",
+      });
+    }
+
+    const result = await disConnectRepo(
+      req,
+      repositoryId
+    );
+
+    res.status(200).json(result);
+  } catch (error: any) {
+    res.status(500).json({
+      success: false,
+      message:
+        error.message ||
+        "Failed to disconnect repository",
+    });
+  }
+};
+export const disconnectAllReposController = async (
+  req: Request,
+  res: Response
+) => {
+  try {
+    const result = await disconnectAllRepos(req);
+
+    res.status(200).json(result);
+  } catch (error: any) {
+    res.status(500).json({
+      success: false,
+      message:
+        error.message ||
+        "Failed to disconnect repositories",
     });
   }
 };

@@ -134,13 +134,15 @@ export async function disConnectRepo(req: Request,repositoryId:string) {
     if (!repository) {
       throw new Error("Repository not found");
     }
+    console.log("deleteing webhooks before");
+    
 
     await deleteWebhok(
       req,
       repository.owner,
       repository.name
     );
-
+ console.log("deleteing webhooks after");
     await prisma.repositary.delete({
       where: {
         id:repositoryId,
@@ -157,4 +159,36 @@ export async function disConnectRepo(req: Request,repositoryId:string) {
     console.error(error);
     throw error;
   }
+}
+export async function disconnectAllRepos(req: Request) {
+  const session = await auth.api.getSession({
+    headers: fromNodeHeaders(req.headers),
+  });
+
+  if (!session?.user) {
+    throw new Error("Unauthorized");
+  }
+
+  const repositories = await prisma.repositary.findMany({
+    where: {
+      userId: session.user.id,
+    },
+  });
+
+  await Promise.all(
+    repositories.map((repo) =>
+      deleteWebhok(req, repo.owner, repo.name)
+    )
+  );
+
+  await prisma.repositary.deleteMany({
+    where: {
+      userId: session.user.id,
+    },
+  });
+
+  return {
+    success: true,
+    message: "All repositories disconnected",
+  };
 }

@@ -121,26 +121,63 @@ export const createWebhook=async(req:Request,owner:string,repo:string)=>{
   return data;
 }
 
-export const deleteWebhok=async(req:Request,owner:string,repo:string)=>{
-  const token=await getGithubToken(req);
-  const octokit=new Octokit({auth:token});
-  const webhookUrl=`${process.env.PUBLIC_App_URL}/api/webhooks/github`
-  const{data:hooks}=await octokit.rest.repos.listWebhooks({
-    owner,
-    repo
-  })
-  const hookTodlelete=hooks.find(hook=>hook.config.url===webhookUrl)
-  if(hookTodlelete){
-   await octokit.rest.repos.deleteWebhook({
-    owner,
-    repo,
-    hook_id:hookTodlelete.id
+export const deleteWebhok = async (
+  req: Request,
+  owner: string,
+  repo: string
+) => {
+  const token = await getGithubToken(req);
 
-  }) 
-   return true; 
-}
-return false;
-}
+  const octokit = new Octokit({
+    auth: token,
+  });
+
+  const webhookUrl =
+    `${process.env.PUBLIC_APP_URL}/api/webhooks/github`;
+
+  console.log("Searching URL:", webhookUrl);
+
+  const { data: hooks } =
+    await octokit.rest.repos.listWebhooks({
+      owner,
+      repo,
+    });
+
+  console.log(
+    "All hooks:",
+    hooks.map((h) => ({
+      id: h.id,
+      url: h.config.url,
+    }))
+  );
+
+  const hookToDelete = hooks.find(
+    (hook) => hook.config.url === webhookUrl
+  );
+
+  console.log(
+    "Hook found:",
+    hookToDelete
+  );
+
+  if (hookToDelete) {
+    await octokit.rest.repos.deleteWebhook({
+      owner,
+      repo,
+      hook_id: hookToDelete.id,
+    });
+
+    console.log("Webhook deleted");
+
+    return true;
+  }
+
+  console.log(
+    "No matching webhook found"
+  );
+
+  return false;
+};
 
 export const getRepoFileContents = async (
   token: string,

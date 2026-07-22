@@ -1,8 +1,34 @@
 import { Router } from "express";
-import { connectRepositoryController, getRepositoriesController } from "../controller/repository.controller.js";
+import {
+  connectRepositoryController,
+  getRepositoriesController,
+  getConnectedRepositoriesController,
+  disConnectRepoController,
+  disconnectAllReposController,
+} from "../controller/repository.controller.js";
+
 const router = Router();
 
-
 router.get("/", getRepositoriesController);
-router.post("/",connectRepositoryController);
+
+router.post(
+  "/connect",
+  connectRepositoryController
+);
+
+router.get(
+  "/connected",
+  getConnectedRepositoriesController
+);
+
+router.delete(
+  "/disconnect",
+  disConnectRepoController
+);
+
+router.delete(
+  "/disconnect-all",
+  disconnectAllReposController
+);
+
 export default router;
