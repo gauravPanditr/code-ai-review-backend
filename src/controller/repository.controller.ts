@@ -1,8 +1,16 @@
 import type { Request,Response } from "express";
 import { connectRepository, disconnectAllRepos, disConnectRepo, getConnectedRepositories, getRepositorie } from "../service/repositories.service.js";
+import type { AuthRequest } from "../types/auth.types.js";
 
-export const getRepositoriesController = async (req: Request, res: Response) => {
+export const getRepositoriesController = async (req: AuthRequest, res: Response) => {
   try {
+     const userId = req.user?.id;
+    if (!userId) {
+    return res.status(401).json({
+      success: false,
+      message: "Unauthorized",
+    });
+  }
     const page = req.query.page ? Number(req.query.page) : 1;
     const perPage = req.query.perPage ? Number(req.query.perPage) : 10;
 
@@ -13,7 +21,7 @@ export const getRepositoriesController = async (req: Request, res: Response) => 
       });
     }
 
-    const repositories = await getRepositorie( page, perPage,req);
+    const repositories = await getRepositorie( userId,page, perPage);
 
     return res.status(200).json({
       success: true,
@@ -37,8 +45,15 @@ export const getRepositoriesController = async (req: Request, res: Response) => 
 };
 
 
-export const connectRepositoryController = async (req: Request, res: Response) => {
+export const connectRepositoryController = async (req: AuthRequest, res: Response) => {
   try {
+     const userId = req.user?.id;
+    if (!userId) {
+    return res.status(401).json({
+      success: false,
+      message: "Unauthorized",
+    });
+  }
     const { owner, repo, githubId } = req.body;
 console.log(owner, repo, githubId);
     if (!owner || !repo || !githubId) {
@@ -48,7 +63,7 @@ console.log(owner, repo, githubId);
       });
     }
 console.log(owner, repo, githubId);
-    const webhook = await connectRepository(req, owner, repo, Number(githubId));
+    const webhook = await connectRepository(userId, owner, repo, Number(githubId));
 
     if (!webhook) {
       return res.status(500).json({
@@ -82,12 +97,19 @@ console.log(owner, repo, githubId);
 };
 
 export const getConnectedRepositoriesController = async (
-  req: Request,
+  req: AuthRequest,
   res: Response
 ) => {
   try {
+     const userId = req.user?.id;
+    if (!userId) {
+    return res.status(401).json({
+      success: false,
+      message: "Unauthorized",
+    });
+  }
     const repositories =
-      await getConnectedRepositories(req);
+      await getConnectedRepositories(userId);
 
     res.status(200).json({
       success: true,
@@ -104,10 +126,17 @@ export const getConnectedRepositoriesController = async (
 };
 
 export const disConnectRepoController = async (
-  req: Request,
+  req: AuthRequest,
   res: Response
 ) => {
   try {
+        const userId = req.user?.id;
+    if (!userId) {
+    return res.status(401).json({
+      success: false,
+      message: "Unauthorized",
+    });
+  }
     const { repositoryId } = req.body;
 
     if (!repositoryId) {
@@ -118,7 +147,7 @@ export const disConnectRepoController = async (
     }
 
     const result = await disConnectRepo(
-      req,
+      userId,
       repositoryId
     );
 
@@ -133,11 +162,18 @@ export const disConnectRepoController = async (
   }
 };
 export const disconnectAllReposController = async (
-  req: Request,
+  req: AuthRequest,
   res: Response
 ) => {
   try {
-    const result = await disconnectAllRepos(req);
+        const userId = req.user?.id;
+    if (!userId) {
+    return res.status(401).json({
+      success: false,
+      message: "Unauthorized",
+    });
+  }
+    const result = await disconnectAllRepos(userId);
 
     res.status(200).json(result);
   } catch (error: any) {
