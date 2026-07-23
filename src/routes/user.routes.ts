@@ -3,10 +3,11 @@ import {
   getUserProfileController,
   updateUserProfileController,
 } from "../controller/user.controller.js";
+import { requireAuth } from "../middleware/auth.middlware.js";
 
 const router = Router();
 
-router.get("/profile", getUserProfileController);
+router.get("/profile", requireAuth,getUserProfileController);
 
 router.patch(
   "/profile/update",

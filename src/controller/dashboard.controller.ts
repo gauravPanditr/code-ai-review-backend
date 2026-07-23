@@ -1,13 +1,21 @@
 
 import type { Request, Response } from "express";
 import { getContributionStats, getDashboardStats, getMonthlyActivity } from "../service/dashboard.service.js";
+import type { AuthRequest } from "../types/auth.types.js";
 
 export const getDashboardController = async (
-  req:Request,
+  req:AuthRequest,
   res: Response
 ) => {
   try {
-    const dashboardData = await getDashboardStats(req);
+     const userId = req.user?.id;
+    if (!userId) {
+    return res.status(401).json({
+      success: false,
+      message: "Unauthorized",
+    });
+  }
+    const dashboardData = await getDashboardStats(userId);
 
     return res.status(200).json({
       success: true,
@@ -23,11 +31,18 @@ export const getDashboardController = async (
   }
 };
 export const getContributionStat = async (
-  req:Request,
+  req:AuthRequest,
   res: Response
 ) => {
   try {
-    const getContributionStat = await getContributionStats(req);
+     const userId = req.user?.id;
+    if (!userId) {
+    return res.status(401).json({
+      success: false,
+      message: "Unauthorized",
+    });
+  }
+    const getContributionStat = await getContributionStats(userId);
 
     return res.status(200).json({
       success: true,
@@ -43,11 +58,18 @@ export const getContributionStat = async (
   }
 };
 export const getMonthlyActivityController = async (
-  req: Request,
+  req:AuthRequest,
   res: Response
 ) => {
   try {
-    const data = await getMonthlyActivity(req);
+     const userId = req.user?.id;
+    if (!userId) {
+    return res.status(401).json({
+      success: false,
+      message: "Unauthorized",
+    });
+  }
+    const data = await getMonthlyActivity(userId);
 
     return res.status(200).json({
       success: true,

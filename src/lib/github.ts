@@ -1,29 +1,27 @@
 
 import { Octokit } from "octokit";
-import { auth } from "./auth.js"
-import { prisma } from "./primsa.js";
-import { fromNodeHeaders } from "better-auth/node";
+
 import type { Request } from "express";
-export const getGithubToken=async (  req: Request)=>{
-    const session=await auth.api.getSession({
-      headers:fromNodeHeaders(req.headers),
-    });
-    if(!session){
-         throw new Error("");
-    }
-    const account=await prisma.account.findFirst({
-        where:{
-            userId:session.user.id,
-            providerId:"github"
+import { prisma } from "./primsa.js";
 
-        }
-    })
+export const getGithubToken = async (
+  userId: string
+) => {
+  const account = await prisma.account.findFirst({
+    where: {
+      userId,
+      providerId: "github",
+    },
+  });
 
-    if(!account?.accessToken){
-     throw new Error("No github")
-    }
-    return account?.accessToken;
-}
+  if (!account?.accessToken) {
+    throw new Error(
+      "No GitHub access token found"
+    );
+  }
+
+  return account.accessToken;
+};
 
 
 
@@ -83,8 +81,8 @@ export async function fetchUserContribution(
   }
 }
 
-export const getRepositories=async(req:Request, page:number=1,perPage:number=10)=>{
-  const token=await getGithubToken(req);
+export const getRepositories=async(userId:string, page:number=1,perPage:number=10)=>{
+  const token=await getGithubToken(userId);
   const octokit=new Octokit({auth:token});
   const {data}=await octokit.rest.repos.listForAuthenticatedUser({
     sort:"updated",
@@ -98,8 +96,8 @@ export const getRepositories=async(req:Request, page:number=1,perPage:number=10)
 
 }
 
-export const createWebhook=async(req:Request,owner:string,repo:string)=>{
-  const token=await getGithubToken(req);
+export const createWebhook=async(userId:string,owner:string,repo:string)=>{
+  const token=await getGithubToken(userId);
   const octokit=new Octokit({auth:token});
   const webhookUrl=`${process.env.PUBLIC_App_URL}/api/webhooks/github`
   const{data:hooks}=await octokit.rest.repos.listWebhooks({
@@ -122,11 +120,11 @@ export const createWebhook=async(req:Request,owner:string,repo:string)=>{
 }
 
 export const deleteWebhok = async (
-  req: Request,
+  userId:string,
   owner: string,
   repo: string
 ) => {
-  const token = await getGithubToken(req);
+  const token = await getGithubToken(userId);
 
   const octokit = new Octokit({
     auth: token,

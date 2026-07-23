@@ -6,28 +6,29 @@ import {
   disConnectRepoController,
   disconnectAllReposController,
 } from "../controller/repository.controller.js";
+import { requireAuth } from "../middleware/auth.middlware.js";
 
 const router = Router();
 
-router.get("/", getRepositoriesController);
+router.get("/",requireAuth, getRepositoriesController);
 
 router.post(
-  "/connect",
+  "/connect",requireAuth,
   connectRepositoryController
 );
 
 router.get(
-  "/connected",
+  "/connected",requireAuth,
   getConnectedRepositoriesController
 );
 
 router.delete(
-  "/disconnect",
+  "/disconnect",requireAuth,
   disConnectRepoController
 );
 
 router.delete(
-  "/disconnect-all",
+  "/disconnect-all",requireAuth,
   disconnectAllReposController
 );
 

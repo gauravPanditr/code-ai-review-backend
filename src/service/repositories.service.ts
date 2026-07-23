@@ -1,6 +1,4 @@
-import type { Request } from "express";
-import { auth } from "../lib/auth.js";
-import { fromNodeHeaders } from "better-auth/node";
+
 
 import {
   createWebhook,
@@ -21,26 +19,20 @@ import {
 } from "../repositories/repository.repository.js";
 
 export const getRepositorie = async (
+   userId:string,
   page: number = 1,
   perPage: number = 10,
-  req: Request
-) => {
-  const session = await auth.api.getSession({
-    headers: fromNodeHeaders(req.headers),
-  });
-
-  if (!session?.user) {
-    throw new Error("Unauthorized");
-  }
+ ) => {
+ 
 
   const githubRepos = await getRepositories(
-    req,
+    userId,
     page,
     perPage
   );
 
   const dbRepos = await findRepositoriesByUser(
-    session.user.id
+    userId
   );
 
   const connectedRepoIds = new Set(
@@ -56,21 +48,15 @@ export const getRepositorie = async (
 };
 
 export const connectRepository = async (
-  req: Request,
+  userId:string,
   owner: string,
   repo: string,
   githubId: number
 ) => {
-  const session = await auth.api.getSession({
-    headers: fromNodeHeaders(req.headers),
-  });
-
-  if (!session?.user) {
-    throw new Error("Unauthorized");
-  }
+ 
 
   const webhook = await createWebhook(
-    req,
+    userId,
     owner,
     repo
   );
@@ -88,7 +74,7 @@ export const connectRepository = async (
         owner,
         fullName: `${owner}/${repo}`,
         url: `https://github.com/${owner}/${repo}`,
-        userId: session.user.id,
+        userId,
       });
     }
 
@@ -98,7 +84,7 @@ export const connectRepository = async (
         data: {
           owner,
           repo,
-          userId: session.user.id,
+          userId,
         },
       });
     } catch (error) {
@@ -110,36 +96,24 @@ export const connectRepository = async (
 };
 
 export async function getConnectedRepositories(
-  req: Request
+  userId:string
 ) {
-  const session = await auth.api.getSession({
-    headers: fromNodeHeaders(req.headers),
-  });
-
-  if (!session?.user) {
-    throw new Error("Unauthorized");
-  }
+ 
 
   return getConnectedRepositoriesByUser(
-    session.user.id
+  userId
   );
 }
 
 export async function disConnectRepo(
-  req: Request,
+  userId:string,
   repositoryId: string
 ) {
-  const session = await auth.api.getSession({
-    headers: fromNodeHeaders(req.headers),
-  });
-
-  if (!session?.user) {
-    throw new Error("Unauthorized");
-  }
+ 
 
   const repository = await findRepositoryById(
     repositoryId,
-    session.user.id
+    userId
   );
 
   if (!repository) {
@@ -147,7 +121,7 @@ export async function disConnectRepo(
   }
 
   await deleteWebhok(
-    req,
+    userId,
     repository.owner,
     repository.name
   );
@@ -162,25 +136,19 @@ export async function disConnectRepo(
 }
 
 export async function disconnectAllRepos(
-  req: Request
+  userId:string
 ) {
-  const session = await auth.api.getSession({
-    headers: fromNodeHeaders(req.headers),
-  });
-
-  if (!session?.user) {
-    throw new Error("Unauthorized");
-  }
+  
 
   const repositories =
     await findRepositoriesByUser(
-      session.user.id
+      userId
     );
 
   await Promise.all(
     repositories.map((repo) =>
       deleteWebhok(
-        req,
+        userId,
         repo.owner,
         repo.name
       )
@@ -188,7 +156,7 @@ export async function disconnectAllRepos(
   );
 
   await deleteAllRepositories(
-    session.user.id
+    userId
   );
 
   return {

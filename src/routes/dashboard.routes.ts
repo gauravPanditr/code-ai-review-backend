@@ -4,11 +4,12 @@ import {
   getContributionStat,
   getMonthlyActivityController,
 } from "../controller/dashboard.controller.js";
+import { requireAuth } from "../middleware/auth.middlware.js";
 
 const router = Router();
 
-router.get("/", getDashboardController);
-router.get("/contribution", getContributionStat);
-router.get("/activity", getMonthlyActivityController);
+router.get("/", requireAuth,getDashboardController);
+router.get("/contribution",requireAuth, getContributionStat);
+router.get("/activity",requireAuth, getMonthlyActivityController);
 
 export default router;

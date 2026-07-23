@@ -7,17 +7,11 @@ import { fromNodeHeaders } from "better-auth/node";
 import { prisma } from "../lib/primsa.js";
 
 
-export async function getContributionStats(req:Request) {
+export async function getContributionStats(userId:string) {
   try {
-     const session = await auth.api.getSession({
-      headers:fromNodeHeaders(req.headers)
-    });
+   
 
-    if (!session?.user) {
-      throw new Error("Unauthorized");
-    }
-
-    const token = await getGithubToken(req);
+    const token = await getGithubToken(userId);
 
     const octokit = new Octokit({
       auth: token,
@@ -46,17 +40,11 @@ export async function getContributionStats(req:Request) {
 }
 
 
-export async function getDashboardStats( req: Request) {
+export async function getDashboardStats(userId:string) {
   try {
-    const session = await auth.api.getSession({
-      headers:fromNodeHeaders(req.headers)
-    });
+    
 
-    if (!session?.user) {
-      throw new Error("Unauthorized");
-    }
-
-    const token = await getGithubToken(req);
+    const token = await getGithubToken(userId);
 
     const octokit = new Octokit({
       auth: token,
@@ -77,7 +65,7 @@ export async function getDashboardStats( req: Request) {
   const totalRepos =
   await prisma.repositary.count({
     where: {
-      userId: session.user.id,
+      userId,
     },
   });
     // Total Commits
@@ -123,17 +111,10 @@ export async function getDashboardStats( req: Request) {
 
 
 
-export async function getMonthlyActivity(req: Request) {
+export async function getMonthlyActivity(userId:string) {
   try {
-    const session = await auth.api.getSession({
-      headers:fromNodeHeaders(req.headers)
-    });
-
-    if (!session?.user) {
-      throw new Error("Unauthorized");
-    }
-
-    const token = await getGithubToken(req);
+   
+    const token = await getGithubToken(userId);
 
     const octokit = new Octokit({
       auth: token,
