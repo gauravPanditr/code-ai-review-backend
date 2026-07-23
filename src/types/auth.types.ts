@@ -8,3 +8,4 @@ export interface AuthRequest extends Request {
     image?: string | null;
   };
 }
+
