@@ -10,9 +10,7 @@ export const githubWebhookController = async (
 
     const event = req.headers["x-github-event"];
 
-   
-
-    if (event === "ping") {
+   if (event === "ping") {
       return res.status(200).json({
         message: "Pong",
       });
@@ -39,6 +37,9 @@ if(event === "pull_request"){
       success: true,
       message: "Event Processed",
     });
+
+
+
   } catch (error) {
     console.error(error);
 

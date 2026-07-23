@@ -1,5 +1,3 @@
-
-
 import { indexCodebase } from "../ai/rag.js";
 import { inngest } from "./client.js";
 import { prisma } from "../lib/primsa.js";
@@ -35,6 +33,18 @@ export const indexRepo:any = inngest.createFunction(
     await step.run("index-codebase", async () => {
       await indexCodebase(`${owner}/${repo}`, files);
     });
+  
+     await step.run("trigger-readme-generation", async () => {
+  await inngest.send({
+    name: "repository.readme.generate",
+    data: {
+      owner,
+      repo,
+      userId,
+    },
+  });
+});
+    
 
     return {
       success: true,

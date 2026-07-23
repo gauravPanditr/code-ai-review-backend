@@ -1,15 +1,23 @@
-import type { Request, Response } from "express";
+import type {  Response } from "express";
 import {
   getUserProfile,
   updateUserProfile,
 } from "../service/user.service.js";
+import type { AuthRequest } from "../types/auth.types.js";
 
 export const getUserProfileController = async (
-  req: Request,
+  req: AuthRequest,
   res: Response
 ) => {
   try {
-    const user = await getUserProfile(req);
+    const userId = req.user?.id;
+    if (!userId) {
+    return res.status(401).json({
+      success: false,
+      message: "Unauthorized",
+    });
+  }
+    const user = await getUserProfile(userId);
     
     
     return res.status(200).json({
@@ -27,18 +35,27 @@ export const getUserProfileController = async (
 };
 
 export const updateUserProfileController = async (
-  req: Request,
+  req: AuthRequest,
   res: Response
 ) => {
   try {
+    const userId = req.user?.id;
+
+    if (!userId) {
+      return res.status(401).json({
+        success: false,
+        message: "Unauthorized",
+      });
+    }
+
     const { name, email } = req.body;
 
     const user = await updateUserProfile(
+      userId,
       {
         name,
         email,
-      },
-      req
+      }
     );
 
     return res.status(200).json({
@@ -50,7 +67,9 @@ export const updateUserProfileController = async (
     return res.status(400).json({
       success: false,
       message:
-        error instanceof Error ? error.message : "Failed to update profile",
+        error instanceof Error
+          ? error.message
+          : "Failed to update profile",
     });
   }
 };
