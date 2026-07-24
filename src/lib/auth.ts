@@ -7,6 +7,9 @@ export const auth = betterAuth({
 
   database: new Pool({
     connectionString: process.env.DATABASE_URL,
+    ssl:{
+      rejectUnauthorized:false,
+    }
   }),
 
   trustedOrigins: [
