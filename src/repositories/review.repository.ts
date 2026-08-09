@@ -8,7 +8,14 @@ export async function findReviewsByUser(userId: string) {
       },
     },
     include: {
-      repository: true,
+      repository: {
+        select: {
+          id: true,
+          name: true,
+          owner: true,
+          fullName: true,
+        },
+      },
     },
     orderBy: {
       createdAt: "desc",
