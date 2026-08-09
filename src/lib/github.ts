@@ -3,7 +3,7 @@ import { Octokit } from "octokit";
 
 import type { Request } from "express";
 import { prisma } from "./primsa.js";
-
+import "dotenv/config.js"
 export const getGithubToken = async (
   userId: string
 ) => {
@@ -99,7 +99,7 @@ export const getRepositories=async(userId:string, page:number=1,perPage:number=1
 export const createWebhook=async(userId:string,owner:string,repo:string)=>{
   const token=await getGithubToken(userId);
   const octokit=new Octokit({auth:token});
-  const webhookUrl=`${process.env.PUBLIC_App_URL}/api/webhooks/github`
+  const webhookUrl=`${process.env.PUBLIC_APP_URL}/api/webhooks/github`
   const{data:hooks}=await octokit.rest.repos.listWebhooks({
     owner,
     repo
