@@ -19,7 +19,7 @@ if(event === "pull_request"){
     const action = req.body.action;
     const repo = req.body.repository.full_name;
     const prNumber = req.body.number;
-
+    
     const [owner , repoName]= repo.split("/")
 
     if(action === "opened" || action === "synchronize"){

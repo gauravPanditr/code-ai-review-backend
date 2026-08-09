@@ -11,7 +11,7 @@ export const auth = betterAuth({
   }),
 
   trustedOrigins: [
-    process.env.PUBLIC_APP_URL!,
+    process.env.FRONTEND_URL!,
     
   ],
 
