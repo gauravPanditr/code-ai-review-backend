@@ -7,7 +7,7 @@ import dashboardRoutes from "./routes/dashboard.routes.js";
 import repositoryRoutes from "./routes/repository.routes.js";
 import userRoutes from "./routes/user.routes.js";
 import webhookRoutes from "./routes/webhook.routes.js";
-
+import reviewRoutes from "./routes/review.routes.js";
 import { inngestHandler } from "./inngest/index.js";
 
 const app = express();
@@ -38,6 +38,8 @@ app.use("/api/dashboard", dashboardRoutes);
 app.use("/api/repositories", repositoryRoutes);
 
 app.use("/api/user", userRoutes);
+
+app.use("/api/review",reviewRoutes)
 
 app.use("/api/inngest", inngestHandler);
 
