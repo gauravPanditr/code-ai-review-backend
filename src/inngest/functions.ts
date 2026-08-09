@@ -34,16 +34,8 @@ export const indexRepo:any = inngest.createFunction(
       await indexCodebase(`${owner}/${repo}`, files);
     });
   
-     await step.run("trigger-readme-generation", async () => {
-  await inngest.send({
-    name: "repository.readme.generate",
-    data: {
-      owner,
-      repo,
-      userId,
-    },
-  });
-});
+    
+
     
 
     return {
