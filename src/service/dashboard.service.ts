@@ -88,7 +88,14 @@ export async function getDashboardStats(userId:string) {
     const totalPRs = prs.total_count;
 
     // Placeholder
-    const totalReviews = 0;
+  const totalReviews = await prisma.review.count({
+  where: {
+    repository: {
+      userId,
+    },
+    status: "completed",
+  },
+});
 
     return {
       user: {
